@@ -9,7 +9,7 @@ USER_NAME = "Chirag Kedia"
 def main():
     # Open WhatsApp Web and get the driver instance
     driver = open_whatsapp()
-    
+'''    
     # Wait for WhatsApp Web to load completely
     time.sleep(10)  # You might need to adjust the sleep time based on your internet speed
 
@@ -30,6 +30,6 @@ def main():
     finally:
         # Close the driver
         driver.quit()
-
+'''
 if __name__ == '__main__':
     main()
