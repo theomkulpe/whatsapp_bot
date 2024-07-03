@@ -191,23 +191,10 @@ def send_approval_requests(driver, new_messages_and_responses):
     actions = ActionChains(driver)
 
     for message_data, response in new_messages_and_responses.items():
-        message_data_list = message_data[0].split('] ')
-        print(message_data_list)
-        timestamp = message_data_list[0] + ']'
-        print(timestamp)
-        senders_name = message_data_list[1].strip()
-        print(senders_name)
-
-        approval_request = f'''{timestamp}
-
-*{senders_name}*
-
-_{message_data[1]}_
-
---------------------
+        approval_request = f'''*{message_data[0].strip()}*
+{message_data[1]}
 
 *Should I reply with:*
-
 {response}'''
 
       
@@ -219,6 +206,8 @@ _{message_data[1]}_
         
         # Finally, send the message by pressing ENTER
         actions.send_keys(Keys.ENTER).perform()
+        message_break = '------------------------------'
+        actions.send_keys(message_break + Keys.ENTER).perform()
 
         time.sleep(1)
 
@@ -289,10 +278,9 @@ def conscious_conversations(driver, unread_count):
         quoted_message_element = message.find_element(By.XPATH, './/span[contains(@class, "quoted-mention")]')
         quoted_message_text = quoted_message_element.text  # Get the text of the quoted message
         quoted_message_text_parts = quoted_message_text.split('\n')
-        timestamp = quoted_message_text_parts[0]
-        senders_name = quoted_message_text_parts[2]
-        older_prompt = quoted_message_text_parts[4]
-        older_response = quoted_message_text_parts[10]
+        metadata = quoted_message_text_parts[0]
+        older_prompt = quoted_message_text_parts[1]
+        older_response = quoted_message_text_parts[4]
 
         prompt = f'''This task involves re-evaluating a previous response based on new feedback to determine the appropriate course of action.
 
@@ -322,16 +310,10 @@ Your output should either be "YES" (to confirm that no changes are needed) or a 
 
         if new_response != "YES":
 
-            approval_request = f'''{timestamp}
-
-*{senders_name}*
-
-_{older_prompt}_
-
---------------------
+            approval_request = f'''*{metadata[0].strip()}*
+{older_prompt}
 
 *Should I reply with:*
-
 {new_response}'''
             
             actions.move_to_element(message).perform()
@@ -354,6 +336,8 @@ _{older_prompt}_
         
             # Finally, send the message by pressing ENTER
             actions.send_keys(Keys.ENTER).perform()
+            message_break = '------------------------------'
+            actions.send_keys(message_break + Keys.ENTER).perform()
 
             time.sleep(1)
 
@@ -361,12 +345,10 @@ _{older_prompt}_
             quoted_message_element = message.find_element(By.XPATH, './/span[contains(@class, "quoted-mention")]')
             quoted_message_text = quoted_message_element.text  # Get the text of the quoted message
             quoted_message_text_parts = quoted_message_text.split('\n')
-            timestamp = quoted_message_text_parts[0]
-            senders_name = quoted_message_text_parts[2]
-            metadata = timestamp + ' ' + senders_name + ': '
-            message_text = quoted_message_text_parts[4]
-            response = quoted_message_text_parts[10]
-            messages_and_approved_responses[(metadata, message_text)] = response
+            metadata = quoted_message_text_parts[0]
+            message_text = quoted_message_text_parts[1]
+            response = quoted_message_text_parts[4]
+            messages_and_approved_responses[(metadata, message_text)] = response 
 
             time.sleep(1)
 
